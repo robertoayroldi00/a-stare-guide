@@ -8,7 +8,7 @@ const guideContent = {
     title: "Roberto Ayroldi",
     subtitle: "I nostri contatti",
     description: "+39.351.482.8654\n+39.327.180.5293\nhttps://exclusiveitaliahost.com/",
-    phone: "+393518428654",
+    phone: "+393514828654",
     whatsapp: "https://wa.me/393514828654",
     email: "info@exclusiveitaliahost.com",
     ctaUrl: "https://exclusiveitaliahost.com/",
