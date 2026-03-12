@@ -10,7 +10,7 @@ const guideContent = {
     description: "+39.351.482.8654\n+39.327.180.5293\nhttps://exclusiveitaliahost.com/",
     phone: "+393514828654",
     whatsapp: "https://wa.me/393514828654",
-    email: "info@exclusiveitaliahost.com",
+    email: "exclusiveitalia.host@gmail.com",
     ctaUrl: "https://exclusiveitaliahost.com/",
     ctaLabel: "Visita il sito",
   },
