@@ -18,9 +18,17 @@ const guideContent = {
   propertyName: "A Stare",
   propertyTagline: "Guest Guide • Molfetta",
   mapUrl:
-    "https://www.google.com/maps/place/70056+Molfetta+BA/@41.1983845,16.5776247,14z/data=!3m1!4b1!4m6!3m5!1s0x1347f9c63f71d435:0xa58f40a1675bae1b!8m2!3d41.2027186!4d16.5987155!16zL20vMGNiNzg?authuser=0&entry=ttu&g_ep=EgoyMDI2MDMxMC4wIKXMDSoASAFQAw%3D%3D",
+    "https://maps.app.goo.gl/9FJ9HQoKMp2qgpNq7",
   languages: {
     it: {
+      wifiSectionTitle: "WiFi",
+      wifiSectionSubtitle: "Rete e password",
+      wifiNameLabel: "Nome rete",
+      wifiPasswordLabel: "Password",
+      wifiCopyPassword: "Copia password",
+      wifiCopied: "Password copiata",
+      wifiNetwork: "A Stare",
+      wifiPassword: "welcometoastare",
       welcome: "Benvenuto ad A Stare",
       chooseLanguage: "Scegli la tua lingua",
       enterGuide: "Entra nella guida",
@@ -41,14 +49,29 @@ const guideContent = {
           title: "Numeri utili",
           text: "118 Emergenze\n112 Carabinieri\n113 Polizia\n115 Vigili del fuoco",
           icon: "phone",
+          action: null,
         },
         {
-          title: "Aeroporto",
-          text: "Bari Karol Wojtyła dista circa 25 minuti in auto da Molfetta.",
-          icon: "plane",
+          title: "WiFi",
+          text: "Visualizza rete e password",
+          icon: "wifi",
+          action: "wifi",
         },
       ],
       menuItems: [
+        {
+          id: "wifi",
+          emoji: "📶",
+          title: "WiFi",
+          subtitle: "Rete e password",
+          sectionTitle: "WiFi",
+          sectionText:
+            "Nome rete: A Stare\nPassword: welcometoastare\n\nPuoi copiare la password e incollarla direttamente nelle impostazioni WiFi del tuo telefono.",
+          ctaLabel: "Copia password",
+          ctaUrl: "",
+          accent: "from-indigo-200 via-blue-100 to-white",
+          hidden: true,
+        },
         {
           id: "soggiorno",
           emoji: "🛏️",
@@ -109,6 +132,14 @@ const guideContent = {
       ],
     },
     en: {
+      wifiSectionTitle: "WiFi",
+      wifiSectionSubtitle: "Network and password",
+      wifiNameLabel: "Network name",
+      wifiPasswordLabel: "Password",
+      wifiCopyPassword: "Copy password",
+      wifiCopied: "Password copied",
+      wifiNetwork: "A Stare",
+      wifiPassword: "welcometoastare",
       welcome: "Welcome to A Stare",
       chooseLanguage: "Choose your language",
       enterGuide: "Enter guide",
@@ -129,14 +160,29 @@ const guideContent = {
           title: "Useful numbers",
           text: "118 Medical emergency\n112 Carabinieri\n113 Police\n115 Fire brigade",
           icon: "phone",
+          action: null,
         },
         {
-          title: "Airport",
-          text: "Bari Karol Wojtyła Airport is about 25 minutes by car from Molfetta.",
-          icon: "plane",
+          title: "WiFi",
+          text: "View network and password",
+          icon: "wifi",
+          action: "wifi",
         },
       ],
       menuItems: [
+        {
+          id: "wifi",
+          emoji: "📶",
+          title: "WiFi",
+          subtitle: "Network and password",
+          sectionTitle: "WiFi",
+          sectionText:
+            "Network name: A Stare\nPassword: welcometoastare\n\nYou can copy the password and paste it directly into your phone’s WiFi settings.",
+          ctaLabel: "Copy password",
+          ctaUrl: "",
+          accent: "from-indigo-200 via-blue-100 to-white",
+          hidden: true,
+        },
         {
           id: "soggiorno",
           emoji: "🛏️",
@@ -213,13 +259,31 @@ const guideContent = {
     { icon: "key", label: "Check-in", value: "15:00" },
     { icon: "logout", label: "Check-out", value: "10:00" },
     { icon: "wifi", label: "WiFi", value: "24 Mbps" },
-    { icon: "map", label: "Maps", value: "Open" },
+    { icon: "map", label: "Maps", value: "Apri" },
   ],
 };
+
+function runDevChecks() {
+  console.assert(
+    typeof guideContent.languages.it.utilityCards[0].text === "string",
+    "Italian utility card text must be a string"
+  );
+  console.assert(
+    typeof guideContent.languages.it.menuItems[0].sectionText === "string",
+    "Italian menu item sectionText must be a string"
+  );
+  console.assert(
+    guideContent.languages.en.utilityCards.some((card) => card.action === "wifi"),
+    "English utility cards should include the WiFi action"
+  );
+}
+
+runDevChecks();
 
 function AStareGuideUI() {
   const [activePage, setActivePage] = useState("language");
   const [language, setLanguage] = useState("it");
+  const [wifiCopied, setWifiCopied] = useState(false);
   const content = guideContent.languages[language];
 
   const iconMap = {
@@ -259,16 +323,33 @@ function AStareGuideUI() {
   const openPage = (pageId) => setActivePage(pageId);
   const goHome = () => setActivePage("home");
   const openLanguage = () => setActivePage("language");
-  const openMaps = () => window.open(guideContent.mapUrl, "_blank", "noopener,noreferrer");
+  const openMaps = () =>
+    window.open(guideContent.mapUrl, "_blank", "noopener,noreferrer");
+
+  const copyWifiPassword = async () => {
+    try {
+      await navigator.clipboard.writeText(content.wifiPassword);
+      setWifiCopied(true);
+      window.setTimeout(() => setWifiCopied(false), 1800);
+    } catch {
+      window.alert(content.wifiPassword);
+    }
+  };
 
   const enterClass = "animate-[fadeIn_.45s_ease-out]";
 
   const renderLanguagePage = () => (
     <section className={`space-y-5 ${enterClass}`}>
       <div className="overflow-hidden rounded-[28px] border border-stone-200 bg-gradient-to-br from-[#f4eadf] to-[#fff7eb] p-8 text-center shadow-[0_14px_34px_rgba(50,40,20,0.12)]">
-        <p className="text-xs uppercase tracking-[0.32em] text-[#8a7b6f]">{guideContent.propertyTagline}</p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[#2e241d]">{content.welcome}</h1>
-        <p className="mt-3 text-sm leading-6 text-[#6f6257]">{content.chooseLanguage}</p>
+        <p className="text-xs uppercase tracking-[0.32em] text-[#8a7b6f]">
+          {guideContent.propertyTagline}
+        </p>
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[#2e241d]">
+          {content.welcome}
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-[#6f6257]">
+          {content.chooseLanguage}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -282,7 +363,9 @@ function AStareGuideUI() {
         >
           <div className="text-2xl">🇮🇹</div>
           <div className="mt-3 text-lg font-semibold text-[#2e241d]">Italiano</div>
-          <div className="mt-1 text-sm text-[#6f6257]">{guideContent.languages.it.enterGuide}</div>
+          <div className="mt-1 text-sm text-[#6f6257]">
+            {guideContent.languages.it.enterGuide}
+          </div>
         </button>
         <button
           type="button"
@@ -294,7 +377,9 @@ function AStareGuideUI() {
         >
           <div className="text-2xl">🇬🇧</div>
           <div className="mt-3 text-lg font-semibold text-[#2e241d]">English</div>
-          <div className="mt-1 text-sm text-[#6f6257]">{guideContent.languages.en.enterGuide}</div>
+          <div className="mt-1 text-sm text-[#6f6257]">
+            {guideContent.languages.en.enterGuide}
+          </div>
         </button>
       </div>
     </section>
@@ -303,32 +388,46 @@ function AStareGuideUI() {
   const renderHomePage = () => (
     <section className={`space-y-5 ${enterClass}`}>
       <div className="grid grid-cols-2 gap-3">
-        {content.utilityCards.map((card) => (
-          <div
-            key={card.title}
-            className="rounded-[22px] bg-white p-4 shadow-[0_10px_24px_rgba(50,40,20,0.08)] ring-1 ring-stone-200"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-100 text-stone-700">
-              <IconRenderer name={card.icon} className="h-5 w-5" />
-            </div>
-            <h3 className="mt-3 text-sm font-semibold text-[#2e241d]">{card.title}</h3>
-            <p className="mt-2 whitespace-pre-line text-xs leading-5 text-[#6c6055]">
-              {card.text}
-            </p>
-          </div>
-        ))}
+        {content.utilityCards.map((card) => {
+          const CardTag = card.action ? "button" : "div";
+          const props = card.action
+            ? { onClick: () => openPage(card.action), type: "button" }
+            : {};
+
+          return (
+            <CardTag
+              key={card.title}
+              {...props}
+              className="rounded-[22px] bg-white p-4 shadow-[0_10px_24px_rgba(50,40,20,0.08)] ring-1 ring-stone-200 text-left transition hover:-translate-y-0.5"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-100 text-stone-700">
+                <IconRenderer name={card.icon} className="h-5 w-5" />
+              </div>
+              <h3 className="mt-3 text-sm font-semibold text-[#2e241d]">
+                {card.title}
+              </h3>
+              <p className="mt-2 whitespace-pre-line text-xs leading-5 text-[#6c6055]">
+                {card.text}
+              </p>
+            </CardTag>
+          );
+        })}
       </div>
 
       <div className="rounded-[26px] bg-gradient-to-br from-[#fff7eb] to-[#f6eee4] p-5 ring-1 ring-stone-200">
-        <p className="text-xs uppercase tracking-[0.28em] text-[#a07c52]">{content.guestGuide}</p>
+        <p className="text-xs uppercase tracking-[0.28em] text-[#a07c52]">
+          {content.guestGuide}
+        </p>
         <h3 className="mt-2 text-3xl font-semibold tracking-tight text-[#3a2a1d]">
           {content.exploreGuide}
         </h3>
-        <p className="mt-2 text-sm leading-6 text-[#7e7063]">{content.exploreSubtitle}</p>
+        <p className="mt-2 text-sm leading-6 text-[#7e7063]">
+          {content.exploreSubtitle}
+        </p>
       </div>
 
       <div className="space-y-4">
-        {content.menuItems.map((item, index) => (
+        {content.menuItems.filter((item) => !item.hidden).map((item, index) => (
           <button
             key={`${item.title}-${index}`}
             type="button"
@@ -337,7 +436,9 @@ function AStareGuideUI() {
           >
             <div className="absolute inset-y-0 right-0 w-28 bg-white/20 blur-2xl" />
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/75 text-3xl shadow-sm ring-1 ring-white/70">
-              <span className="transition duration-300 group-hover:scale-110">{item.emoji}</span>
+              <span className="transition duration-300 group-hover:scale-110">
+                {item.emoji}
+              </span>
             </div>
             <div className="relative min-w-0 flex-1">
               <h3 className="truncate text-[1.2rem] font-semibold leading-tight text-[#29221d]">
@@ -356,6 +457,8 @@ function AStareGuideUI() {
 
   const renderDetailPage = (item) => {
     if (!item) return null;
+
+    const isWifiPage = item.id === "wifi";
 
     return (
       <section className={enterClass}>
@@ -387,7 +490,17 @@ function AStareGuideUI() {
               <p className="whitespace-pre-line text-sm leading-7 text-[#5f5449]">
                 {item.sectionText}
               </p>
-              {item.ctaLabel && item.ctaUrl ? (
+
+              {isWifiPage ? (
+                <button
+                  type="button"
+                  onClick={copyWifiPassword}
+                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#1f1a17] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90 active:scale-[0.98]"
+                >
+                  <Wifi className="h-4 w-4" strokeWidth={2.2} />
+                  {wifiCopied ? content.wifiCopied : content.wifiCopyPassword}
+                </button>
+              ) : item.ctaLabel && item.ctaUrl ? (
                 <a
                   href={item.ctaUrl}
                   target="_blank"
@@ -419,13 +532,15 @@ function AStareGuideUI() {
         <div className="bg-gradient-to-br from-[#f4eadf] to-[#fff7eb] px-5 py-6">
           <div className="flex items-start gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/80 text-stone-700 shadow-sm ring-1 ring-white/70">
-              <IconRenderer name="user" className="h-8 w-8" />
+              <UserRound className="h-8 w-8" strokeWidth={2.1} />
             </div>
             <div>
               <h2 className="text-3xl font-semibold tracking-tight text-[#2e241d]">
                 {guideContent.hostPage.title}
               </h2>
-              <p className="mt-2 text-sm text-[#8a7b6f]">{guideContent.hostPage.subtitle}</p>
+              <p className="mt-2 text-sm text-[#8a7b6f]">
+                {guideContent.hostPage.subtitle}
+              </p>
             </div>
           </div>
         </div>
@@ -486,7 +601,8 @@ function AStareGuideUI() {
           <div className="grid grid-cols-4 border-b border-white/10">
             {guideContent.quickInfo.map((item, index) => {
               const isMapsTile = item.icon === "map";
-              const shared = "flex min-h-[88px] flex-col items-center justify-center gap-1 px-2 text-center text-white";
+              const shared =
+                "flex min-h-[88px] flex-col items-center justify-center gap-1 px-2 text-center text-white";
 
               return isMapsTile ? (
                 <button
@@ -496,17 +612,27 @@ function AStareGuideUI() {
                   className={`${shared} cursor-pointer border-r border-white/10 transition hover:bg-white/5 last:border-r-0`}
                   aria-label="Open Google Maps for Molfetta"
                 >
-                  <span className="flex h-6 w-6 items-center justify-center"><IconRenderer name={item.icon} className="h-5 w-5" /></span>
-                  <span className="text-[10px] uppercase tracking-wide text-stone-300">{item.label}</span>
-                  <span className="text-sm font-semibold underline underline-offset-2">{item.value}</span>
+                  <span className="flex h-6 w-6 items-center justify-center">
+                    <IconRenderer name={item.icon} className="h-5 w-5" />
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wide text-stone-300">
+                    {item.label}
+                  </span>
+                  <span className="text-sm font-semibold underline underline-offset-2">
+                    {item.value}
+                  </span>
                 </button>
               ) : (
                 <div
                   key={`${item.label}-${index}`}
                   className={`${shared} border-r border-white/10 last:border-r-0`}
                 >
-                  <span className="flex h-6 w-6 items-center justify-center"><IconRenderer name={item.icon} className="h-5 w-5" /></span>
-                  <span className="text-[10px] uppercase tracking-wide text-stone-300">{item.label}</span>
+                  <span className="flex h-6 w-6 items-center justify-center">
+                    <IconRenderer name={item.icon} className="h-5 w-5" />
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wide text-stone-300">
+                    {item.label}
+                  </span>
                   <span className="text-sm font-semibold">{item.value}</span>
                 </div>
               );
@@ -559,14 +685,22 @@ function AStareGuideUI() {
                   </button>
                   <div className="flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-2xl">
-                      {isHostPage ? <IconRenderer name="user" className="h-6 w-6" /> : activeHeaderItem?.emoji}
+                      {isHostPage ? (
+                        <IconRenderer name="user" className="h-6 w-6" />
+                      ) : (
+                        activeHeaderItem?.emoji
+                      )}
                     </div>
                     <div>
                       <h1 className="text-2xl font-semibold tracking-tight text-[#f7ead7]">
-                        {isHostPage ? guideContent.hostPage.title : activeHeaderItem?.sectionTitle || activeHeaderItem?.title}
+                        {isHostPage
+                          ? guideContent.hostPage.title
+                          : activeHeaderItem?.sectionTitle || activeHeaderItem?.title}
                       </h1>
                       <p className="mt-1 text-sm text-stone-200">
-                        {isHostPage ? guideContent.hostPage.subtitle : activeHeaderItem?.subtitle}
+                        {isHostPage
+                          ? guideContent.hostPage.subtitle
+                          : activeHeaderItem?.subtitle}
                       </p>
                     </div>
                   </div>
@@ -604,10 +738,14 @@ function AStareGuideUI() {
                         : openPage(item.pageId)
                   }
                   className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-center transition duration-300 active:scale-[0.96] ${
-                    isActive ? "bg-[#f8f3ec] text-[#7d5420] shadow-sm" : "text-[#9b7a4f] hover:bg-[#f8f3ec]"
+                    isActive
+                      ? "bg-[#f8f3ec] text-[#7d5420] shadow-sm"
+                      : "text-[#9b7a4f] hover:bg-[#f8f3ec]"
                   }`}
                 >
-                  <span className="flex h-5 w-5 items-center justify-center"><IconRenderer name={item.icon} className="h-4.5 w-4.5" /></span>
+                  <span className="flex h-5 w-5 items-center justify-center">
+                    <IconRenderer name={item.icon} className="h-4 w-4" />
+                  </span>
                   <span className="text-[11px] leading-none">{item.label}</span>
                 </button>
               );
