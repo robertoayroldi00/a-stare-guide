@@ -248,7 +248,7 @@ const guideContent = {
     title: "Roberto Ayroldi",
     subtitle: "I nostri contatti",
     description:
-      "+39 351 842 8654\n+39 327 180 5293\nexclusiveitaliahost.com",
+      "+39 351 842 8654\n+39 327 180 5293\nwww.exclusiveitaliahost.com",
     phone: "+393518428654",
     whatsapp: "https://wa.me/393518428654",
     email: "info@exclusiveitaliahost.com",
