@@ -259,7 +259,7 @@ const guideContent = {
     { icon: "key", label: "Check-in", value: "15:00" },
     { icon: "logout", label: "Check-out", value: "10:00" },
     { icon: "wifi", label: "WiFi", value: "24 Mbps" },
-    { icon: "map", label: "Maps", value: "Apri" },
+    { icon: "user", label: "Host", value: "Roberto" },
   ],
 };
 
@@ -605,11 +605,12 @@ function AStareGuideUI() {
                 "flex min-h-[88px] flex-col items-center justify-center gap-1 px-2 text-center text-white";
 
               return isMapsTile ? (
-                <button
+                <a
                   key={`${item.label}-${index}`}
-                  type="button"
-                  onClick={openMaps}
-                  className={`${shared} cursor-pointer border-r border-white/10 transition hover:bg-white/5 last:border-r-0`}
+                  href={guideContent.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${shared} cursor-pointer border-r border-white/10 transition hover:bg-white/5 active:bg-white/10 last:border-r-0`}
                   aria-label="Open Google Maps for Molfetta"
                 >
                   <span className="flex h-6 w-6 items-center justify-center">
@@ -621,7 +622,7 @@ function AStareGuideUI() {
                   <span className="text-sm font-semibold underline underline-offset-2">
                     {item.value}
                   </span>
-                </button>
+                </a>
               ) : (
                 <div
                   key={`${item.label}-${index}`}
